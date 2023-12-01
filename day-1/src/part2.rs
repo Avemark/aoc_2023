@@ -17,7 +17,7 @@ fn evaluate_row(row: &str) -> Result<usize, String> {
         .iter()
         .map(|n| n.expect("failed to get element from vector").to_string())
         .collect();
-    assert!(number.len() == 2);
+    assert_eq!(number.len(), 2);
     Ok(number.parse::<usize>().expect("Could not parse resulting integer"))
 }
 
