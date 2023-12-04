@@ -2,8 +2,22 @@ use std::cmp::Ordering;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Coordinate {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
+}
+
+impl Coordinate {
+    pub fn safe_new(x: isize, y: isize) -> Self {
+        let actual_x = usize::try_from(x).or(Ok(0usize)).unwrap();
+        let actual_y =usize::try_from(y).or(Ok(0usize)).unwrap();
+
+        Self {
+            x: actual_x,
+            y: actual_y
+        }
+    }
+
+
 }
 
 impl PartialEq<Self> for Coordinate {
@@ -35,6 +49,22 @@ impl Ord for Coordinate {
             return Ordering::Less;
         }
         return Ordering::Equal;
+    }
+}
+
+pub fn decrement(value: usize) -> usize {
+    if value == 0usize {
+        value
+    } else {
+        value - 1
+    }
+}
+
+pub fn increment(value: usize, max: usize) -> usize {
+    if value == max {
+        value
+    } else {
+        value + 1
     }
 }
 
