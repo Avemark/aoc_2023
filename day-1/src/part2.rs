@@ -1,26 +1,27 @@
 use nom::branch::alt;
 use nom::bytes::complete::{tag, take};
 use nom::character::complete::digit1;
-use nom::IResult;
 use nom::multi::{many1, many_till};
+use nom::IResult;
 
 pub fn process(input: &str) -> Result<usize, String> {
-    input.split("\n").map(|row| evaluate_row(row) ).sum()
+    input.split("\n").map(|row| evaluate_row(row)).sum()
 }
 
 fn evaluate_row(row: &str) -> Result<usize, String> {
-    let (_tail,digits) = digits_in_row(row).expect("Could not parse any digits in row");
+    let (_tail, digits) = digits_in_row(row).expect("Could not parse any digits in row");
 
-    assert!(digits.len() >= 1, "Not enough numbers in {r}", r=row);
+    assert!(digits.len() >= 1, "Not enough numbers in {r}", r = row);
 
     let number: String = vec![digits.first(), digits.last()]
         .iter()
         .map(|n| n.expect("failed to get element from vector").to_string())
         .collect();
     assert_eq!(number.len(), 2);
-    Ok(number.parse::<usize>().expect("Could not parse resulting integer"))
+    Ok(number
+        .parse::<usize>()
+        .expect("Could not parse resulting integer"))
 }
-
 
 fn one(input: &str) -> IResult<&str, usize> {
     let (_, _one) = tag("one")(input)?;
@@ -40,49 +41,47 @@ fn three(input: &str) -> IResult<&str, usize> {
     Ok((&input[1..], 3))
 }
 
-fn four (input: &str) -> IResult<&str, usize> {
+fn four(input: &str) -> IResult<&str, usize> {
     let (_, _one) = tag("four")(input)?;
 
     Ok((&input[1..], 4))
 }
 
-fn five (input: &str) -> IResult<&str, usize> {
+fn five(input: &str) -> IResult<&str, usize> {
     let (_, _one) = tag("five")(input)?;
 
     Ok((&input[1..], 5))
 }
-fn six (input: &str) -> IResult<&str, usize> {
+fn six(input: &str) -> IResult<&str, usize> {
     let (_, _one) = tag("six")(input)?;
 
     Ok((&input[1..], 6))
 }
-fn seven (input: &str) -> IResult<&str, usize> {
+fn seven(input: &str) -> IResult<&str, usize> {
     let (_, _one) = tag("seven")(input)?;
 
     Ok((&input[1..], 7))
 }
-fn eight (input: &str) -> IResult<&str, usize> {
+fn eight(input: &str) -> IResult<&str, usize> {
     let (_, _one) = tag("eight")(input)?;
 
     Ok((&input[1..], 8))
 }
 
-fn nine (input: &str) -> IResult<&str, usize> {
+fn nine(input: &str) -> IResult<&str, usize> {
     let (_, _one) = tag("nine")(input)?;
 
     Ok((&input[1..], 9))
 }
 
-fn zero (input: &str) -> IResult<&str, usize> {
+fn zero(input: &str) -> IResult<&str, usize> {
     let (_, _) = tag("zero")(input)?;
 
     Ok((&input[1..], 0))
 }
 
 fn any_written_digit(input: &str) -> IResult<&str, usize> {
-    let (input, digit) = alt(
-        (one, two, three, four, five, six, seven, eight, nine, zero)
-    )(input)?;
+    let (input, digit) = alt((one, two, three, four, five, six, seven, eight, nine, zero))(input)?;
 
     Ok((input, digit))
 }
@@ -90,13 +89,15 @@ fn any_written_digit(input: &str) -> IResult<&str, usize> {
 fn single_digit(input: &str) -> IResult<&str, usize> {
     let (input, first) = take(1usize)(input)?;
     let (_, digit) = digit1(first)?;
-    Ok((input, digit.parse::<usize>().expect("couldn't parse a digit")))
+    Ok((
+        input,
+        digit.parse::<usize>().expect("couldn't parse a digit"),
+    ))
 }
 
 fn any_input_digit(input: &str) -> IResult<&str, usize> {
     alt((single_digit, any_written_digit))(input)
 }
-
 
 fn digit_with_garbage(input: &str) -> IResult<&str, usize> {
     let (input, (_, digit)) = many_till(take(1usize), any_input_digit)(input)?;
@@ -113,12 +114,11 @@ mod tests {
 
     #[test]
     fn test_digits_in_row() -> Result<(), String> {
-        assert_eq!(digits_in_row("1abc2"), Ok(("", vec![1,2])));
-        assert_eq!(digits_in_row("pqr3stu8vwx"), Ok(("vwx", vec![3,8])));
-        assert_eq!(digits_in_row("a1b2c3d4e5f"), Ok(("f", vec![1,2,3,4,5])));
+        assert_eq!(digits_in_row("1abc2"), Ok(("", vec![1, 2])));
+        assert_eq!(digits_in_row("pqr3stu8vwx"), Ok(("vwx", vec![3, 8])));
+        assert_eq!(digits_in_row("a1b2c3d4e5f"), Ok(("f", vec![1, 2, 3, 4, 5])));
         assert_eq!(digits_in_row("treb7uchet"), Ok(("uchet", vec![7])));
-        assert_eq!(digits_in_row("oneight"), Ok(("ight", vec![1,8])));
-
+        assert_eq!(digits_in_row("oneight"), Ok(("ight", vec![1, 8])));
 
         Ok(())
     }

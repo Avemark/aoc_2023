@@ -1,17 +1,22 @@
 pub fn process(input: &str) -> Result<usize, String> {
-    input.split("\n").map(|row| evaluate_row(row) ).sum()
+    input.split("\n").map(|row| evaluate_row(row)).sum()
 }
 
 fn evaluate_row(row: &str) -> Result<usize, String> {
     let digits = row
         .chars()
-        .filter( |&c| c.is_numeric() )
+        .filter(|&c| c.is_numeric())
         .collect::<Vec<char>>();
 
-    assert!(digits.len() >= 1, "Not enough numbers in {r}", r=row);
+    assert!(digits.len() >= 1, "Not enough numbers in {r}", r = row);
 
-    let number: String = vec![digits.first(), digits.last()].iter().map(|n| n.expect("not enough numbers in the row")).collect();
-    Ok(number.parse::<usize>().expect("Could not parse resulting integer"))
+    let number: String = vec![digits.first(), digits.last()]
+        .iter()
+        .map(|n| n.expect("not enough numbers in the row"))
+        .collect();
+    Ok(number
+        .parse::<usize>()
+        .expect("Could not parse resulting integer"))
 }
 
 #[cfg(test)]

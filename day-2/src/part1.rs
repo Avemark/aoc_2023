@@ -1,4 +1,4 @@
-pub fn process(input: &str) -> Result<usize, String> {
+pub fn process(_input: &str) -> Result<usize, String> {
     Ok(0)
 }
 

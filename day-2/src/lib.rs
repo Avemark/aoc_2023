@@ -9,27 +9,31 @@ pub struct Grab {
     blue: usize,
 }
 
-
 impl Grab {
     fn can_fit_in(&self, other: &Self) -> bool {
         self.green <= other.green && self.red <= other.red && self.blue <= other.blue
     }
 
     fn all(num: usize) -> Self {
-        Self { green: num, blue: num, red: num }
+        Self {
+            green: num,
+            blue: num,
+            red: num,
+        }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Game {
-    grabs: Vec<Grab>
+    name: String,
+    grabs: Vec<Grab>,
 }
 
 impl Game {
     fn possible_within(&self, reference: &Grab) -> bool {
         for grab in &self.grabs {
             if !grab.can_fit_in(reference) {
-                return false
+                return false;
             }
         }
         true
@@ -43,10 +47,8 @@ mod tests {
     #[test]
     fn test_possible_within() -> Result<(), String> {
         let game = Game {
-            grabs: vec! [
-                Grab::all(1),
-                Grab::all(3)
-            ]
+            name: "test".to_string(),
+            grabs: vec![Grab::all(1), Grab::all(3)],
         };
 
         assert!(game.possible_within(&Grab::all(5)));
