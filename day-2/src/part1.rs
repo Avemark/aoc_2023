@@ -1,13 +1,17 @@
-use crate::{Grab};
 use crate::parser::parse_game;
+use crate::Grab;
 
 pub fn process(input: &str) -> Result<usize, String> {
-    let reference = Grab { green: 13, red: 12, blue: 14 };
+    let reference = Grab {
+        green: 13,
+        red: 12,
+        blue: 14,
+    };
     let result = input
         .lines()
-        .map( |line| { parse_game(line).expect("Game parse failure") } )
-        .filter( |game| { game.possible_within(&reference) })
-        .map( |game| { game.number })
+        .map(|line| parse_game(line).expect("Game parse failure"))
+        .filter(|game| game.possible_within(&reference))
+        .map(|game| game.number)
         .collect::<Vec<usize>>();
 
     Ok(result.iter().sum())

@@ -14,6 +14,7 @@ impl Grab {
         self.green <= other.green && self.red <= other.red && self.blue <= other.blue
     }
 
+    #[cfg(test)]
     fn all(num: usize) -> Self {
         Self {
             green: num,
@@ -23,7 +24,14 @@ impl Grab {
     }
 
     fn to_string(&self) -> String {
-        format!("green: {}, red: {}, blue: {}", self.green, self.red, self.blue)
+        format!(
+            "green: {}, red: {}, blue: {}",
+            self.green, self.red, self.blue
+        )
+    }
+
+    fn power(&self) -> usize {
+        self.green * self.red * self.blue
     }
 }
 
@@ -44,15 +52,45 @@ impl Game {
     }
 
     pub fn to_string(&self) -> String {
-        format!("Game {}: {}", self.number, self.grabs.iter().map(|grab| { grab.to_string() }).collect::<Vec<String>>().join(", ") )
+        format!(
+            "Game {}: {}",
+            self.number,
+            self.grabs
+                .iter()
+                .map(|grab| { grab.to_string() })
+                .collect::<Vec<String>>()
+                .join(", ")
+        )
     }
 
     fn minimal_grab(&self) -> Grab {
-        let red = self.grabs.iter().map( |grab| { grab.red } ).max().or(Some(0)).unwrap();
-        let green = self.grabs.iter().map( |grab| { grab.green } ).max().or(Some(0)).unwrap();
-        let blue = self.grabs.iter().map( |grab| { grab.blue } ).max().or(Some(0)).unwrap();
+        let red = self
+            .grabs
+            .iter()
+            .map(|grab| grab.red)
+            .max()
+            .or(Some(0))
+            .unwrap();
+        let green = self
+            .grabs
+            .iter()
+            .map(|grab| grab.green)
+            .max()
+            .or(Some(0))
+            .unwrap();
+        let blue = self
+            .grabs
+            .iter()
+            .map(|grab| grab.blue)
+            .max()
+            .or(Some(0))
+            .unwrap();
 
         Grab { red, green, blue }
+    }
+
+    pub fn power(&self) -> usize {
+        self.minimal_grab().power()
     }
 }
 
@@ -63,10 +101,11 @@ mod tests {
     #[test]
     fn test_minimal_grab() -> Result<(), String> {
         assert_eq!(
-            Game { number: 1, grabs: vec![
-                Grab::all(6),
-                Grab::all(1)
-            ]}.minimal_grab(),
+            Game {
+                number: 1,
+                grabs: vec![Grab::all(6), Grab::all(1)]
+            }
+            .minimal_grab(),
             Grab::all(6)
         );
 

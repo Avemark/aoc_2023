@@ -8,7 +8,7 @@ use nom::sequence::{delimited, preceded, terminated, Tuple};
 use nom::IResult;
 
 fn grab(input: &str) -> IResult<&str, Grab> {
-    peek(alt((red,blue,green)))(input)?;
+    peek(alt((red, blue, green)))(input)?;
     let (input, (red, blue, green)) = terminated(
         permutation((
             alt((color_not_present, red)),
@@ -28,22 +28,21 @@ fn grab_end(input: &str) -> IResult<&str, &str> {
 }
 
 pub fn parse_game(input: &str) -> Result<Game, String> {
-    let (_, game)  = game(input).expect("Could not parse game line");
+    let (_, game) = game(input).expect("Could not parse game line");
 
     Ok(game)
 }
 
 fn game(input: &str) -> IResult<&str, Game> {
-    let (input, (game_no, grabs)) = (
-        delimited(tag("Game "), alphanumeric1, tag(":")),
-        many1(grab),
-    )
-        .parse(input)?;
+    let (input, (game_no, grabs)) =
+        (delimited(tag("Game "), alphanumeric1, tag(":")), grabs).parse(input)?;
 
     Ok((
         input,
         Game {
-            number: game_no.parse::<usize>().expect("Weird Game number could not be parsed"),
+            number: game_no
+                .parse::<usize>()
+                .expect("Weird Game number could not be parsed"),
             grabs,
         },
     ))
@@ -139,13 +138,11 @@ mod tests {
             grabs(" 3 green;"),
             Ok((
                 "",
-                vec![
-                    Grab {
-                        green: 3,
-                        blue: 0,
-                        red: 0
-                    }
-                ]
+                vec![Grab {
+                    green: 3,
+                    blue: 0,
+                    red: 0
+                }]
             ))
         );
         assert_eq!(
