@@ -1,8 +1,6 @@
 use crate::custom_error::AocError;
 
-pub fn process(
-    _input: &str,
-) -> Result<String, AocError> {
+pub fn process(_input: &str) -> Result<String, AocError> {
     todo!("day 01 - part 1");
 }
 
@@ -12,8 +10,16 @@ mod tests {
 
     #[test]
     fn test_process() -> Result<(), AocError> {
-        todo!("haven't built test yet");
-        let input = "";
+        let input = "467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..";
         assert_eq!("", process(input)?);
         Ok(())
     }

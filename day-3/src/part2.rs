@@ -1,8 +1,6 @@
 use crate::custom_error::AocError;
 
-pub fn process(
-    _input: &str,
-) -> Result<String, AocError> {
+pub fn process(_input: &str) -> Result<String, AocError> {
     todo!("part 2");
 }
 
