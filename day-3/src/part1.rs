@@ -11,7 +11,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_process() -> Result<()> {
+    fn test_process() -> Result<(), AocError> {
         todo!("haven't built test yet");
         let input = "";
         assert_eq!("", process(input)?);
