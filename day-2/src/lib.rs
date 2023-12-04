@@ -21,22 +21,38 @@ impl Grab {
             red: num,
         }
     }
+
+    fn to_string(&self) -> String {
+        format!("green: {}, red: {}, blue: {}", self.green, self.red, self.blue)
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Game {
-    name: String,
+    number: usize,
     grabs: Vec<Grab>,
 }
 
 impl Game {
-    fn possible_within(&self, reference: &Grab) -> bool {
+    pub fn possible_within(&self, reference: &Grab) -> bool {
         for grab in &self.grabs {
             if !grab.can_fit_in(reference) {
                 return false;
             }
         }
         true
+    }
+
+    pub fn to_string(&self) -> String {
+        format!("Game {}: {}", self.number, self.grabs.iter().map(|grab| { grab.to_string() }).collect::<Vec<String>>().join(", ") )
+    }
+
+    fn minimal_grab(&self) -> Grab {
+        let red = self.grabs.iter().map( |grab| { grab.red } ).max().or(Some(0)).unwrap();
+        let green = self.grabs.iter().map( |grab| { grab.green } ).max().or(Some(0)).unwrap();
+        let blue = self.grabs.iter().map( |grab| { grab.blue } ).max().or(Some(0)).unwrap();
+
+        Grab { red, green, blue }
     }
 }
 
@@ -45,9 +61,22 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_minimal_grab() -> Result<(), String> {
+        assert_eq!(
+            Game { number: 1, grabs: vec![
+                Grab::all(6),
+                Grab::all(1)
+            ]}.minimal_grab(),
+            Grab::all(6)
+        );
+
+        Ok(())
+    }
+
+    #[test]
     fn test_possible_within() -> Result<(), String> {
         let game = Game {
-            name: "test".to_string(),
+            number: 1,
             grabs: vec![Grab::all(1), Grab::all(3)],
         };
 

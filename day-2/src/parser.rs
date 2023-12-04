@@ -7,7 +7,7 @@ use nom::multi::many1;
 use nom::sequence::{delimited, preceded, terminated, Tuple};
 use nom::IResult;
 
-pub fn grab(input: &str) -> IResult<&str, Grab> {
+fn grab(input: &str) -> IResult<&str, Grab> {
     peek(alt((red,blue,green)))(input)?;
     let (input, (red, blue, green)) = terminated(
         permutation((
@@ -27,7 +27,13 @@ fn grab_end(input: &str) -> IResult<&str, &str> {
     Ok((input, ""))
 }
 
-pub fn game(input: &str) -> IResult<&str, Game> {
+pub fn parse_game(input: &str) -> Result<Game, String> {
+    let (_, game)  = game(input).expect("Could not parse game line");
+
+    Ok(game)
+}
+
+fn game(input: &str) -> IResult<&str, Game> {
     let (input, (game_no, grabs)) = (
         delimited(tag("Game "), alphanumeric1, tag(":")),
         many1(grab),
@@ -37,7 +43,7 @@ pub fn game(input: &str) -> IResult<&str, Game> {
     Ok((
         input,
         Game {
-            name: game_no.to_string(),
+            number: game_no.parse::<usize>().expect("Weird Game number could not be parsed"),
             grabs,
         },
     ))
@@ -171,7 +177,7 @@ mod tests {
             Ok((
                 "",
                 Game {
-                    name: String::from("1"),
+                    number: 1,
                     grabs: vec![
                         Grab {
                             green: 0,
