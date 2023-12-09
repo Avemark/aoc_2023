@@ -7,15 +7,15 @@ pub struct Coordinate {
 }
 
 impl Coordinate {
-    pub fn safe_new(x: isize, y: isize) -> Self {
-        let actual_x = usize::try_from(x).or(Ok(0usize)).unwrap();
-        let actual_y =usize::try_from(y).or(Ok(0usize)).unwrap();
-
-        Self {
-            x: actual_x,
-            y: actual_y
-        }
-    }
+    // pub fn safe_new(x: isize, y: isize) -> Self {
+    //     let actual_x = usize::try_from(x).or(Ok(0usize)).unwrap();
+    //     let actual_y =usize::try_from(y).or(Ok(0usize)).unwrap();
+    //
+    //     Self {
+    //         x: actual_x,
+    //         y: actual_y
+    //     }
+    // }
 
 
 }
