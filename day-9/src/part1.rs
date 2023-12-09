@@ -1,4 +1,3 @@
-use std::fmt::format;
 use crate::custom_error::AocError;
 
 pub fn process(
