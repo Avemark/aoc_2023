@@ -13,7 +13,7 @@ mod tests {
     #[test]
     fn test_process() -> Result<(), AocError> {
         todo!("haven't built test yet");
-        let input = include_str!("../example.txt");
+        let input = include_str!("../example1.txt");
         assert_eq!("", process(input)?);
         Ok(())
     }
