@@ -24,7 +24,8 @@ struct Guard {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Things {
     Stuff,
-    Guard
+    Guard,
+    Empty
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -40,10 +41,7 @@ fn parse_guard(input: &str) -> IResult<&str, Guard> {
 }
 
 fn parse_thing(input: &str) -> IResult<&str, Things> {
-    alt(
-        parse_guard,
-        
-    )
+    alt((parse_guard,parse_empty, parse_stuff))
 }
 
 pub fn parse_game_board(filename: &str) -> IResult<&str, Gameboard> {
