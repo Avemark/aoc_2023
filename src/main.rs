@@ -1,5 +1,7 @@
 mod parser;
+mod guard;
 
+use crate::parser::{parse_game_board, GameBoard, GuardDirection};
 use bevy::diagnostic::DiagnosticsStore;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::{
@@ -9,12 +11,24 @@ use bevy::{
     },
     prelude::*,
 };
+use bevy::color::palettes::basic::WHITE;
+use crate::guard::{GuardPlugin, InitGuard};
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, (setup, set_additive_bloom).chain())
-        .add_systems(Update, (wiggle_text, close_on_esc, fps_text_update_system, draw_board))
+        .add_systems(Startup, load_board)
+        .add_systems(
+            Update,
+            (
+                wiggle_text,
+                close_on_esc,
+                fps_text_update_system,
+                draw_board,
+            ),
+        )
+        .add_plugins(GuardPlugin)
         .add_plugins(FrameTimeDiagnosticsPlugin::default())
         .insert_resource(ClearColor(Color::srgb(0.0, 0.0, 0.0)))
         .run();
@@ -53,12 +67,39 @@ fn setup(mut commands: Commands) {
     // commands.spawn((Text2d::new("0?"), text_font, TextColor(color), FpsText));
 }
 
-fn draw_board(mut commands: Commands, mut gizmos: Gizmos,) {
+fn load_board(mut commands: Commands, mut init_guard: EventWriter<InitGuard>) {
+    let game_board = parse_game_board("src/example.txt");
+
+    init_guard.send(InitGuard::from_game_board(&game_board));
+    commands.insert_resource(game_board);
+}
+
+fn draw_board(mut gizmos: Gizmos, game_board: Res<GameBoard>) {
     let radius = 20.0;
-    for i in 0..10 {
-        for j in 0..10 {
-            gizmos.circle_2d(Isometry2d::from_xy(i as f32 * (radius * 2.4) - radius * 10.0, j as f32 * (radius * 2.4) - radius * 10.0), radius, Color::srgb(4.0, 1.0, 1.5));
+    let spacing = radius * 0.4;
+    let offset = radius * 2.0 + spacing;
+
+    for x in 0..game_board.height {
+        for y in 0..game_board.width {
+            let center = Isometry2d::from_xy(
+                x as f32 * offset - offset * game_board.width as f32 / 2.0,
+                y as f32 * -offset + offset * game_board.height as f32 / 2.0,
+            );
+            if let Some(position) = game_board.get(x,y) {
+                gizmos.circle_2d(
+                    center,
+                    radius,
+                    position.color(),
+                );
+            } else {
+                gizmos.circle_2d(
+                    center,
+                    radius,
+                    WHITE,
+                );
+            }
         }
+
     }
 }
 
@@ -128,7 +169,7 @@ fn fps_text_update_system(
 
         transform.translation.x = point.x;
         transform.translation.y = point.y;
-        
+
         // try to get a "smoothed" FPS value from Bevy
         if let Some(value) = diagnostics
             .get(&FrameTimeDiagnosticsPlugin::FPS)
